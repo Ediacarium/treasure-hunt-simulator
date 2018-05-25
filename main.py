@@ -4,6 +4,18 @@ import csv
 from tqdm import tqdm
 import matplotlib.pyplot as plot
 
+BOSEIJU_AMOUNT = 4
+CASCADE_BLUFFS_AMOUNT = 4
+DESOLATE_LIGHTHOUSE_AMOUNT = 1
+GEMSTONE_CAVERNS_AMOUNT = 4
+GEMSTONE_MINE_AMOUNT = 4
+ISLAND_AMOUNT = 11
+MOUNTAIN_AMOUNT = 9
+NEPHALIA_ACADEMY_AMOUNT = 4
+OBORO_AMOUNT = 4
+RELIQUARY_TOWER_AMOUNT = 4
+SPIREBLUFF_CANAL_AMOUNT = 4
+TOLARIA_WEST_AMOUNT = 4
 TREASURE_HUNT_AMOUNT = 4
 LIGHTNING_STORM_AMOUNT = 2
 csv_file = "./results.csv"
@@ -138,40 +150,40 @@ def can_produce_blue(cards):
 def shuffled_deck():
     deck = []
 
-    for _ in range(4):
+    for _ in range(BOSEIJU_AMOUNT):
         deck.append(Card.BOSEIJU)
         
-    for _ in range(4):
+    for _ in range(CASCADE_BLUFFS_AMOUNT):
         deck.append(Card.CASCADE_BLUFFS)
         
-    for _ in range(1):
+    for _ in range(DESOLATE_LIGHTHOUSE_AMOUNT):
         deck.append(Card.DESOLATE_LIGHTHOUSE)
         
-    for _ in range(4):
+    for _ in range(GEMSTONE_CAVERNS_AMOUNT):
         deck.append(Card.GEMSTONE_CAVERNS)
         
-    for _ in range(4):
+    for _ in range(GEMSTONE_MINE_AMOUNT):
         deck.append(Card.GEMSTONE_MINE)
         
-    for _ in range(10):
+    for _ in range(ISLAND_AMOUNT):
         deck.append(Card.ISLAND)
         
-    for _ in range(10):
+    for _ in range(MOUNTAIN_AMOUNT):
         deck.append(Card.MOUNTAIN)
         
-    for _ in range(4):
+    for _ in range(NEPHALIA_ACADEMY_AMOUNT):
         deck.append(Card.NEPHALIA_ACADEMY)
         
-    for _ in range(1):
+    for _ in range(OBORO_AMOUNT):
         deck.append(Card.OBORO)
         
-    for _ in range(4):
+    for _ in range(RELIQUARY_TOWER_AMOUNT):
         deck.append(Card.RELIQUARY_TOWER)
         
-    for _ in range(4):
+    for _ in range(SPIREBLUFF_CANAL_AMOUNT):
         deck.append(Card.SPIREBLUFF_CANAL)
 
-    for _ in range(4):
+    for _ in range(TOLARIA_WEST_AMOUNT):
         deck.append(Card.TOLARIA_WEST)
         
     for _ in range(LIGHTNING_STORM_AMOUNT):
@@ -180,7 +192,10 @@ def shuffled_deck():
     for _ in range(TREASURE_HUNT_AMOUNT):
         deck.append(Card.TREASURE_HUNT)
         
-
+    if len(deck) > 60:
+        print("WARNING: more than 60 cards in the deck", len(deck))
+    if len(deck) < 60:
+        print("Warning: Deck too small")
     random.shuffle(deck)
     return deck
 
@@ -493,29 +508,112 @@ def turn(hand, deck, battlefield):
 #    fieldnames = ["turnnumber", "lands", "hand", "win"]
 #    writer = csv.writer(csvfile)
 #    writer.writeheader(fieldnames)
-maxturns = 0
-turncounts = []
-turnamounts = 1000000
-for i in tqdm(range(turnamounts)):
-    hand, deck = first_hand()
-    hand, deck, battlefield = pregame_actions(hand, deck)
-    won = False
-    turncount = 0
-    while (not won) and len(deck) > 1:
-        #print(battlefield.lands, len(deck), hand)
-        hand, deck, battlefield, won = turn(hand, deck, battlefield)
-        turncount += 1
-    if turncount > maxturns:
-        maxturns = turncount
-    turncounts.append(turncount)
+
+def simulate_games():
+    maxturns = 0
+    turncounts = []
+    turnamounts = 1000
+    for i in tqdm(range(turnamounts)):
+        hand, deck = first_hand()
+        hand, deck, battlefield = pregame_actions(hand, deck)
+        won = False
+        turncount = 0.0
+        while (not won) and len(deck) > 1:
+            #print(battlefield.lands, len(deck), hand)
+            hand, deck, battlefield, won = turn(hand, deck, battlefield)
+            turncount += 1
+        if turncount > maxturns:
+            maxturns = turncount
+        turncounts.append(turncount)
+    return turncounts, float(sum(turncounts))/turnamounts
  
-print("Average game length: ", sum(turncounts)/turnamounts)
-plot.hist(turncounts, bins=maxturns, align='mid') 
-plot.xlim([0, maxturns]) 
+def get_decklist():
+    cards = [(BOSEIJU_AMOUNT, Card.BOSEIJU),
+             (CASCADE_BLUFFS_AMOUNT, Card.CASCADE_BLUFFS),
+             (DESOLATE_LIGHTHOUSE_AMOUNT, Card.DESOLATE_LIGHTHOUSE),
+             (GEMSTONE_MINE_AMOUNT, Card.GEMSTONE_MINE),
+             (GEMSTONE_CAVERNS_AMOUNT, Card.GEMSTONE_CAVERNS),
+             (NEPHALIA_ACADEMY_AMOUNT, Card.NEPHALIA_ACADEMY),
+             (OBORO_AMOUNT, Card.OBORO),
+             (RELIQUARY_TOWER_AMOUNT, Card.RELIQUARY_TOWER),
+             (SPIREBLUFF_CANAL_AMOUNT, Card.SPIREBLUFF_CANAL),
+             (TOLARIA_WEST_AMOUNT, Card.TOLARIA_WEST),
+             (TREASURE_HUNT_AMOUNT, Card.TREASURE_HUNT),
+             (LIGHTNING_STORM_AMOUNT, Card.LIGHTNING_STORM),
+             (ISLAND_AMOUNT, Card.ISLAND),
+             (MOUNTAIN_AMOUNT, Card.MOUNTAIN)]
+
+    deck = []
+    for (amount ,card_type) in cards:
+        deck.append(str(amount) + " " + str(card_type))
+    return deck
+
+optimum = 60
+deckList = ""
+to_check = []
+for i in range(5):
+    for j in range(5):
+        for k in range(5):
+            for l in range(5):
+                for lm in range(5):
+                    for m in range(5):
+                        for n in range(5):
+                            for o in range(5):
+                                for p in range(5):
+                                    for q in range(5):
+                                        for r in range(1,5):
+                                            for s in range(1, 4):
+                                                for t in range(60-i-j-k-l-lm-m-n-o-p-q-r-s):
+                                                    u = 60-i-j-k-l-lm-m-n-o-p-q-r-s-t
+                                                    print(i,j,k,l,lm,m,n,o,p,q,r,s,t,u)
+                                                    to_check.append((i,j,k,l,lm,m,n,o,p,q,r,s,t,u))
+                                                    #for (i,j,k,l,lm,m,o,p,q,r,s,t,u) in tqdm(to_check):
+                                                    BOSEIJU_AMOUNT = i
+                                                    CASCADE_BLUFFS_AMOUNT = j
+                                                    DESOLATE_LIGHTHOUSE_AMOUNT = k
+                                                    GEMSTONE_CAVERNS_AMOUNT = l  
+                                                    GEMSTONE_MINE_AMOUNT = lm    
+                                                    NEPHALIA_ACADEMY_AMOUNT = m
+                                                    OBORO_AMOUNT = n                    
+                                                    RELIQUARY_TOWER_AMOUNT = o                    
+                                                    SPIREBLUFF_CANAL_AMOUNT = p
+                                                    TOLARIA_WEST_AMOUNT = q                                    
+                                                    TREASURE_HUNT_AMOUNT = r
+                                                    LIGHTNING_STORM_AMOUNT = s
+                                                    ISLAND_AMOUNT = t
+                                                    MOUNTAIN_AMOUNT = u
+                                                    turncounts, turnaverage = simulate_games()
+                                                    print(turnaverage)
+                                                    if optimum > turnaverage:
+                                                        optimum = turnaverage
+                                                        deckList = get_decklist()
+                                                        print("New decklist found")
+        
+with open("optimal.dec", 'w') as deckfile:
+    print("\n".join(deck), file=deckfile)
+   
+"""BOSEIJU_AMOUNT = 4
+CASCADE_BLUFFS_AMOUNT = 4
+DESOLATE_LIGHTHOUSE = 1
+GEMSTONE_CAVERNS_AMOUNT = 4
+GEMSTONE_MINE_AMOUNT = 4
+ISLAND_AMOUNT = 11
+MOUNTAIN_AMOUNT = 9
+NEPHALIA_ACADEMY_AMOUNT = 4
+OBORO_AMOUNT = 4
+RELIQUARY_TOWER_AMOUNT = 4
+SPIREBLUFF_CANAL_AMOUNT = 4
+TOLARIA_WEST_AMOUNT = 4
+TREASURE_HUNT_AMOUNT = 4
+LIGHTNING_STORM_AMOUNT = 2
+""" 
+#print("Average game length: ", sum(turncounts)/turnamounts)
+#plot.hist(turncounts, bins=maxturns, align='mid') 
+#plot.xlim([0, maxturns]) 
 #axis([xmin,xmax,ymin,ymax])
-plot.xlabel('Turns')
-plot.ylabel('Amount')
-plot.show()
+#plot.xlabel('Turns')
+#plot.ylabel('Amount')
+#plot.show()
 
     
 #with open(gnuplotfile, 'w') as plotfile:
